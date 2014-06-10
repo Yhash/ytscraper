@@ -4,7 +4,7 @@ This is the README file of ytscraper.
 
 Description:
 
-ytscraper is a collection of script that I made using javascript. It can scrap urls of a video in youtube. It is intented to be used as a bookmarklet for modern browsers like Google Chrome and Mozilla Firefox.
+ytscraper is a collection of scripts that I made using javascript. It can scrap urls of a video in youtube. It is intented to be used as a bookmarklet for modern browsers like Google Chrome and Mozilla Firefox.
 
 When you upload a video in YouTube, YouTube will convert it in different video format and resolution. As of this writing YouTube convert uploaded videos in MP4, FLV and WEBM while it uses 144p, 240p, 360p, 480p, 720p and etc for resolution.
 
