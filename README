@@ -1,3 +1,28 @@
+---------------------------------------
 This is the README file of ytscraper.
+---------------------------------------
 
-ytscraper is a script that I made using javascript. It can scrap urls of a video in youtube. It is intented to be used as a bookmarklet for modern browsers like Google Chrome and Mozilla Firefox.
+Description:
+
+ytscraper is a collection of script that I made using javascript. It can scrap urls of a video in youtube. It is intented to be used as a bookmarklet for modern browsers like Google Chrome and Mozilla Firefox.
+
+When you upload a video in YouTube, YouTube will convert it in different video format and resolution. As of this writing YouTube convert uploaded videos in MP4, FLV and WEBM while it uses 144p, 240p, 360p, 480p, 720p and etc for resolution.
+
+ytscraper have two version one that can scrap all the urls of a video that contains both a video and audio stream (ytscraper.js) and another that can scrap all the urls of a video that contain separate video stream and audio stream (ytscraper_adaptive.js).
+
+For most users ytscraper.js should be used. While ytscraper.js is for someone that wants to get the url of a video stream or an audio stream.
+
+
+License:
+
+See LICENSE file for details.
+
+
+Usage:
+
+Just make a bookmark preferably in the bookmark bar and then copy and paste the content of ytscraper.js or ytscraper_adaptive.js to the url textbox of the bookmark. Then go to youtube, watch a video that you want to scrap and then click the bookmark.
+
+
+Supported browser(s):
+
+This is best used in Google Chrome and Mozilla Firefox while other modern web browsers may also be used.
