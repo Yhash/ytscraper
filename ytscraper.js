@@ -46,13 +46,20 @@ javascript:(function() {
 
     function decodeSig(sig) {
         sig = sig.split("");
-        sig = sig.slice(2);
-        var tmp = sig[0];
-        sig[0] = sig[18 % sig.length];
-        sig[18] = tmp;
+        sig = shuffle(sig, 12);
+        sig = sig.slice(3);
+        sig = shuffle(sig, 56);
+        sig = sig.reverse();
         sig = sig.slice(2);
         sig = sig.reverse();
-        return sig.join("")
+        return sig.join("");
+    }
+
+    function shuffle(sig, b){
+        var c = sig[0];
+        sig[0] = sig[b % sig.length];
+        sig[b] = c;
+        return sig;
     }
        
     function validate(str) {
