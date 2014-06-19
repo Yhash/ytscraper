@@ -46,16 +46,17 @@ javascript:(function() {
 
     function decodeSig(sig) {
         sig = sig.split("");
-        sig = shuffle(sig, 12);
-        sig = sig.slice(3);
-        sig = shuffle(sig, 56);
+        sig = shuffle(sig,50);
         sig = sig.reverse();
-        sig = sig.slice(2);
+        sig = shuffle(sig,46);
+        sig = sig.reverse();
+        sig = shuffle(sig,5);
+        sig = sig.slice(1);
         sig = sig.reverse();
         return sig.join("");
     }
 
-    function shuffle(sig, b){
+    function shuffle(sig, b) {
         var c = sig[0];
         sig[0] = sig[b % sig.length];
         sig[b] = c;
