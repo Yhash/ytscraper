@@ -35,12 +35,15 @@ javascript:(function() {
             vid_urls[i] = vid_urls[i].replace(/&lmt=(\d+)/, '');
 
             if (vid_urls[i].search(/&signature=/) === -1) {
-                vid_urls[i] = vid_urls[i].replace('&sig=', '&signature=');
-                vid_urls[i] = vid_urls[i].replace('&s=', '&signature=');
-                vid_urls[i] = vid_urls[i].replace('&signaturenature=', '&signature=');
+                if (vid_urls[i].search(/&sig=/) !== -1) {
+                    vid_urls[i] = vid_urls[i].replace('&sig=', '&signature=');
+                } else if (vid_urls[i].search(/&s=/) !== -1) {
+                    vid_urls[i] = vid_urls[i].replace('&s=', '&signature=');
+                } else if (vid_urls[i].search(/&signaturenature=/) !== -1) {
+                    vid_urls[i] = vid_urls[i].replace('&signaturenature=', '&signature=');
+                }
 
-                var sig = vid_urls[i].match(/&signature=([^&]+)/)[1];
-                vid_urls[i] = vid_urls[i].replace(/&signature=([^&]+)/, '&signature='+decodeSig(sig));
+                vid_urls[i] = vid_urls[i].replace(/&signature=([^&]+)/, '&signature='+decodeSig(vid_urls[i].match(/&signature=([^&]+)/)[1]));
             }
         }
  
@@ -48,23 +51,12 @@ javascript:(function() {
     }
 
     function decodeSig(sig) {
-        sig = sig.split("");
-        sig = shuffle(sig,50);
-        sig = sig.reverse();
-        sig = shuffle(sig,46);
-        sig = sig.reverse();
-        sig = shuffle(sig,5);
-        sig = sig.slice(1);
-        sig = sig.reverse();
-        return sig.join("");
-    }
-
-    function shuffle(sig, b) {
-        var c = sig[0];
-        sig[0] = sig[b % sig.length];
-        sig[b] = c;
-        return sig;
-    }
+		sig = sig.split("");
+		sig = sig.reverse();
+		sig = sig.slice(1);
+		sig = sig.reverse();
+		return sig.join("");
+	}
        
     function validate(str) {
         str = str.replace(/[#%&{}\\<>\*\?$!\'":@+`\|=]/g, '');
