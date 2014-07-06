@@ -51,12 +51,19 @@ javascript:(function() {
     }
 
     function decodeSig(sig) {
-		sig = sig.split("");
-		sig = sig.reverse();
-		sig = sig.slice(1);
-		sig = sig.reverse();
-		return sig.join("");
-	}
+        sig = sig.split("");
+        sig = io(sig, 69);
+        sig = io(sig, 70);
+        sig = sig.slice(3);
+        return sig.join("");
+    }
+
+    function io(sig, b) {
+        var c = sig[0];
+        sig[0] = sig[b%sig.length];
+        sig[b] = c;
+        return sig;
+    }
        
     function validate(str) {
         str = str.replace(/[#%&{}\\<>\*\?$!\'":@+`\|=]/g, '');
