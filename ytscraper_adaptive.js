@@ -52,17 +52,12 @@ javascript:(function() {
 
     function decodeSig(sig) {
         sig = sig.split("");
-        sig = io(sig, 69);
-        sig = io(sig, 70);
+        sig = sig.reverse();
         sig = sig.slice(3);
+        var b = sig[0];
+        sig[0] = sig[57 % sig.length];
+        sig[57] = b;
         return sig.join("");
-    }
-
-    function io(sig, b) {
-        var c = sig[0];
-        sig[0] = sig[b%sig.length];
-        sig[b] = c;
-        return sig;
     }
        
     function validate(str) {
