@@ -49,11 +49,11 @@ javascript:(function() {
 
     function decodeSig(sig) {
         sig = sig.split("");
-        sig = sig.reverse();
-        sig = sig.slice(3);
         var b = sig[0];
-        sig[0] = sig[57 % sig.length];
-        sig[57] = b;
+        sig[0] = sig[37 % sig.length];
+        sig[37] = b;
+        sig = sig.reverse();
+        sig = sig.slice(1);
         return sig.join("");
     }
     
