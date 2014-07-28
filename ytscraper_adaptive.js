@@ -34,29 +34,47 @@ javascript:(function() {
             vid_urls[i] = vid_urls[i].replace(/&clen=(\d+)/, '');
             vid_urls[i] = vid_urls[i].replace(/&lmt=(\d+)/, '');
 
-            if (vid_urls[i].search(/&signature=/) === -1) {
-                if (vid_urls[i].search(/&sig=/) !== -1) {
-                    vid_urls[i] = vid_urls[i].replace('&sig=', '&signature=');
-                } else if (vid_urls[i].search(/&s=/) !== -1) {
-                    vid_urls[i] = vid_urls[i].replace('&s=', '&signature=');
-                } else if (vid_urls[i].search(/&signaturenature=/) !== -1) {
-                    vid_urls[i] = vid_urls[i].replace('&signaturenature=', '&signature=');
+            if (vid_urls[i].search(/(\?|&)signature=/) === -1) {
+                if (vid_urls[i].search(/sig=/) !== -1) {
+                    vid_urls[i] = vid_urls[i].replace('sig=', 'signature=');
+                } else if (vid_urls[i].search(/(\?|&)s=/) !== -1) {
+                    var stmp = vid_urls[i].match(/(\?|&)s=/)[1];
+                    vid_urls[i] = vid_urls[i].replace(/(\?|&)s=/, stmp+'signature=');
+                } else if (vid_urls[i].search(/signaturenature=/) !== -1) {
+                    vid_urls[i] = vid_urls[i].replace('signaturenature=', 'signature=');
                 }
 
-                vid_urls[i] = vid_urls[i].replace(/&signature=([^&]+)/, '&signature='+decodeSig(vid_urls[i].match(/&signature=([^&]+)/)[1]));
+                vid_urls[i] = vid_urls[i].replace(/signature=([^&]+)/, 'signature='+decodeSig(vid_urls[i].match(/signature=([^&]+)/)[1]));
             }
         }
  
         return vid_urls;
     }
 
+    var Go = {
+        TR:function(a) {
+            a.reverse()
+        },
+        TU:function(a, b) {
+            var c = a[0];
+            a[0] = a[b%a.length];
+            a[b] = c
+        },
+        sH:function(a, b) {
+            a.splice(0,b)
+        }
+    };
+
     function decodeSig(sig) {
         sig = sig.split("");
-        var b = sig[0];
-        sig[0] = sig[37 % sig.length];
-        sig[37] = b;
-        sig = sig.reverse();
-        sig = sig.slice(1);
+        Go.sH(sig, 2);
+        Go.TU(sig, 28);
+        Go.TU(sig, 44);
+        Go.TU(sig, 26);
+        Go.TU(sig, 40);
+        Go.TU(sig, 64);
+        Go.TR(sig, 26);
+        Go.sH(sig, 1);
         return sig.join("");
     }
        
