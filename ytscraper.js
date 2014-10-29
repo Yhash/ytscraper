@@ -1,19 +1,31 @@
 javascript:(function() {
     function getVideoFormat(url) {
-        var re = /&type=video\/([^;&]+)/;
-        var format = url.match(re)[1];
-        var dashIndex = format.indexOf('-');
-
-        if (dashIndex != -1) return format.substring(dashIndex+1);
-        return format;
+        var re = /&type=([^;&]+)/;
+        return url.match(re)[1];
     }
  
     function getFmtList(args) {
         return args['fmt_list'].split(/,/);
     }
- 
-    function getVideoURLs(args) {
-        var stream_map = args['url_encoded_fmt_stream_map'];
+
+    function getResFmtList(fmt_list) {
+        var res = [];
+        for (var i=0; i<fmt_list.length; i++) {
+            res[i] = fmt_list[i].split(/\//)[1];
+        }
+        return res;
+    }
+
+    function getRes(urls) {
+        var res = [];
+        for (var i=0; i<urls.length; i++) {
+            res[i] = urls[i].match(/[?&]size=([^&]+)/);
+            res[i] = (res[i]) ? res[i][1] : '';
+        }
+        return res;
+    }
+
+    function getVideoURLs(stream_map) {
         stream_map = stream_map.replace(/\\\\u0026/, '&');
         var vid_urls = stream_map.split(/,/);
  
@@ -29,50 +41,21 @@ javascript:(function() {
             }
  
             vid_urls[i] = decodeURIComponent(vid_urls[i]);
-            vid_urls[i] = vid_urls[i].replace(/&itag=(\d+)/, '');
-
-            if (vid_urls[i].search(/(\?|&)signature=/) === -1) {
-                if (vid_urls[i].search(/sig=/) !== -1) {
-                    vid_urls[i] = vid_urls[i].replace('sig=', 'signature=');
-                } else if (vid_urls[i].search(/(\?|&)s=/) !== -1) {
-                    var stmp = vid_urls[i].match(/(\?|&)s=/)[1];
-                    vid_urls[i] = vid_urls[i].replace(/(\?|&)s=/, stmp+'signature=');
-                } else if (vid_urls[i].search(/signaturenature=/) !== -1) {
-                    vid_urls[i] = vid_urls[i].replace('signaturenature=', 'signature=');
-                }
-
-                vid_urls[i] = vid_urls[i].replace(/signature=([^&]+)/, 'signature='+decodeSig(vid_urls[i].match(/signature=([^&]+)/)[1]));
+            var p = [/(itag=[^&]+)&?/, /(clen=[^&]+)&?/, /(lmt=[^&]+)&?/];
+            for (var k=0; k<p.length; k++) {
+                vid_urls[i] = replaceAll(vid_urls[i], p[k]);
             }
+
+            if (vid_urls[i].search(/(\?|&)signature=/) === -1) {return null;}
         }
- 
+
         return vid_urls;
     }
 
-    var Go = {
-        TR:function(a) {
-            a.reverse()
-        },
-        TU:function(a, b) {
-            var c = a[0];
-            a[0] = a[b%a.length];
-            a[b] = c
-        },
-        sH:function(a, b) {
-            a.splice(0,b)
-        }
-    };
-
-    function decodeSig(sig) {
-        sig = sig.split("");
-        Go.sH(sig, 2);
-        Go.TU(sig, 28);
-        Go.TU(sig, 44);
-        Go.TU(sig, 26);
-        Go.TU(sig, 40);
-        Go.TU(sig, 64);
-        Go.TR(sig, 26);
-        Go.sH(sig, 1);
-        return sig.join("");
+    function replaceAll(url, p) {
+        m = url.match(p);
+        if (m) { url = url.replace(new RegExp(p.source, 'g'), '') + '&' + m[1]; }
+        return url;
     }
     
     function validate(str) {
@@ -95,11 +78,13 @@ javascript:(function() {
         return str.replace(/\s+$/, '');
     }
  
-    function displayWindow(fmt_list, vid_urls, title) {
+    function displayWindow(vid_urls, res, title) {
         var newText = '<h1>' + title + '<\/h1><table><tr><th>&nbsp;<\/th><th>Resolution<\/th><th>Type<\/th><th>Link<\/th><\/tr>';
- 
-        for (var i = 0; i < vid_urls.length; i++) {
-            newText += '<tr><td>' + (i+1) + '.<\/td><td>' + fmt_list[i].split(/\//)[1] + '<\/td><td>' + getVideoFormat(vid_urls[i]) + '<\/td><td><a target=\'_blank\' href=\'' + vid_urls[i] + '&title=' + encodeURIComponent(validate(title)) + '\'>Download<\/a><\/td><\/tr>';
+
+        for (var r=0; r<vid_urls.length; r++) {
+            for (var c=0; c<vid_urls[r].length; c++) {
+                newText += '<tr><td>' + (c+1) + '.<\/td><td>' + res[r][c] + '<\/td><td>' + getVideoFormat(vid_urls[r][c]) + '<\/td><td><a target=\'_blank\' href=\'' + vid_urls[r][c] + '&title=' + encodeURIComponent(validate(title)) + '\'>Download<\/a><\/td><\/tr>';
+            }
         }
  
         var newWin = window.open('', 'yt');
@@ -109,9 +94,31 @@ javascript:(function() {
     var args = null;
     try {
         args = ytplayer.config.args;
-    } catch(e) {
+    } catch (e) {
         alert('Sorry, an error occured. Make sure that you are currently viewing a youtube.com webpage that contains a streamming video before using this bookmarklet. But if you already done that maybe Youtube changes its webpage again. And I need to update this bookmarklet to work again.');
     } finally {
-        if (args) { displayWindow(getFmtList(args), getVideoURLs(args), args.title); }
+        if (args) {
+            var maps = ['url_encoded_fmt_stream_map', 'adaptive_fmts'],
+                video_urls = [], res = [], supported = true;
+
+            for (var i=0; i<maps.length; i++) {
+                video_urls[i] = getVideoURLs(args[maps[i]]);
+
+                if (video_urls[i] == null) {
+                    supported = false;
+                    break;
+                }
+
+                if (maps[i] == maps[0]) {
+                    res[i] = getResFmtList(getFmtList(args));
+                } else {
+                    res[i] = getRes(video_urls[i]);
+                }
+            }
+
+            if (supported) {
+                displayWindow(video_urls, res, args.title);
+            } else {alert("Sorry but this video is not supported by this script!");}
+        }
     }
 })();
