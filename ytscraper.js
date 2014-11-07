@@ -85,6 +85,7 @@ javascript:(function() {
             for (var c=0; c<vid_urls[r].length; c++) {
                 newText += '<tr><td>' + (c+1) + '.<\/td><td>' + res[r][c] + '<\/td><td>' + getVideoFormat(vid_urls[r][c]) + '<\/td><td><a target=\'_blank\' href=\'' + vid_urls[r][c] + '&title=' + encodeURIComponent(validate(title)) + '\'>Download<\/a><\/td><\/tr>';
             }
+            newText += '<tr><td>&nbsp;</td></tr>';
         }
  
         var newWin = window.open('', 'yt');
