@@ -1,6 +1,4 @@
----------------------------------------
-#This is the README file of ytscraper.
----------------------------------------
+#This is the README file of ytscraper
 
 
 ##Description:
